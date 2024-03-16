@@ -2,6 +2,6 @@
 {
     public interface IAPIService
     {
-        string GetPictureFromPDF();
+        string AddBookIfNotExist();
     }
 }

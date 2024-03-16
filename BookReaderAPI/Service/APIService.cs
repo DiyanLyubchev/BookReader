@@ -8,34 +8,40 @@ namespace BookReaderAPI.Service
     {
         private readonly IGenericRepository<BookDetails> _repository = repository;
 
-        public string GetPictureFromPDF()
+        public string AddBookIfNotExist()
         {
-            string pathToBook = @"D:\Common-Sense-Investing.pdf";
+            string message = string.Empty;
+            //TODO: This will be removed when the client upload feature is implemented
+            string pathToBook = @"D:\The-Simple-Path-to-Wealth.pdf";
 
             if (File.Exists(pathToBook))
             {
-                PdfReader reader = new(File.ReadAllBytes(pathToBook));
+                byte[] bookContent = File.ReadAllBytes(pathToBook);
+                PdfReader reader = new(bookContent);
                 string title = reader.Info["Title"];
-                //  _repository.GetFirstOrDefault(x => x.Title == reader)
-                for (var pageNum = 1; pageNum <= reader.NumberOfPages; pageNum++)
+                string authour = reader.Info["Author"];
+                BookDetails bookDetails = _repository.GetFirstOrDefault(x => x.Title == title && x.Author == authour);
+
+                if (bookDetails == null)
                 {
-                    byte[] contentBytes = reader.GetPageContent(pageNum);
-                    PrTokeniser tokenizer = new(new RandomAccessFileOrArray(contentBytes));
-
-                    List<string> stringsList = new();
-                    while (tokenizer.NextToken())
+                    message = $"Book {title} from authour: {authour} was added successfully!";
+                    byte[] pictureBytes = reader.GetPageContent(1);
+                    bookDetails = new()
                     {
-                        if (tokenizer.TokenType == PrTokeniser.TK_STRING)
-                        {
-                            stringsList.Add(tokenizer.StringValue);
-                        }
-                    }
+                        Title = title,
+                        Pages = reader.NumberOfPages,
+                        Author = authour,
+                        BookPicture = new() { Picture = pictureBytes },
+                        BookContent = new() { Content = bookContent }
+                    };
 
-                    // Print the set of string tokens, one on each line.
-                    Console.WriteLine(string.Join("\r\n", stringsList));
+                    _repository.InsertWithSave(bookDetails);
                 }
+                else
+                    message = $"Book with title {title} and from authour: {authour} already exists!";
             }
-            return null;
+
+            return string.IsNullOrEmpty(message) ? "Book cannot be add!" : message;
         }
     }
 }

@@ -25,13 +25,12 @@ app.UseHttpsRedirection();
 app.MapGet("/book-reader", (IGenericRepository<BookDetails> repository) =>
 {
     IEnumerable<BookDetails> response = repository.GetAll(null, x => x.BookPicture, x => x.BookContent);
-    return response;
+    return Results.Ok(response);
 });
 
 app.MapGet("/book-reader-add", (IAPIService service) =>
 {
-    string dada = service.GetPictureFromPDF();
-    return dada;
+    return Results.Ok(service.AddBookIfNotExist());
 });
 
 app.Run();

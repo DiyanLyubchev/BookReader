@@ -1,7 +1,9 @@
+using BookReaderAPI.Models.Request;
 using BookReaderAPI.Service;
 using BookReaderDataAccess.Context;
 using BookReaderDataAccess.Models;
 using BookReaderDataAccess.Repository;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,15 +24,19 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/book-reader", (IGenericRepository<BookDetails> repository) =>
+app.MapGet("/all-details", (IAPIService service) =>
 {
-    IEnumerable<BookDetails> response = repository.GetAll(null, x => x.BookPicture, x => x.BookContent);
-    return Results.Ok(response);
+    return Results.Ok(service.GetAllBookDetails());
 });
 
-app.MapGet("/book-reader-add", (IAPIService service) =>
+app.MapGet("/content/{id}", (int id, IAPIService service) =>
 {
-    return Results.Ok(service.AddBookIfNotExist());
+    return Results.Ok(service.GetBookContentById(id));
+});
+
+app.MapPost("/add-book", ([FromBody] BookContentRequest request, IAPIService service) =>
+{
+    return Results.Ok(service.AddBookIfNotExist(request.Content));
 });
 
 app.Run();

@@ -1,4 +1,5 @@
-﻿using BookReaderDataAccess.Models;
+﻿using BookReaderAPI.Models.Response;
+using BookReaderDataAccess.Models;
 using BookReaderDataAccess.Repository;
 using iTextSharp.text.pdf;
 
@@ -8,7 +9,23 @@ namespace BookReaderAPI.Service
     {
         private readonly IGenericRepository<BookDetails> _repository = repository;
 
-        public string AddBookIfNotExist()
+        public List<BookDetailsResponse> GetAllBookDetails()
+        {
+
+            List<BookDetailsResponse> booksDetails = _repository.GetAll(filter: null, includeProperties: x => x.BookPicture)
+                                                                .Select(book => new BookDetailsResponse
+                                                                {
+                                                                    Author = book.Author,
+                                                                    Pages = book.Pages,
+                                                                    Title = book.Title,
+                                                                    Picture = book.BookPicture.Picture
+                                                                })
+                                                                .ToList();
+
+            return booksDetails;
+        }
+
+        public string AddBookIfNotExist(byte[] bookContent)
         {
             string message = string.Empty;
             //TODO: This will be removed when the client upload feature is implemented
@@ -16,11 +33,11 @@ namespace BookReaderAPI.Service
 
             if (File.Exists(pathToBook))
             {
-                byte[] bookContent = File.ReadAllBytes(pathToBook);
+                bookContent = File.ReadAllBytes(pathToBook);
                 PdfReader reader = new(bookContent);
                 string title = reader.Info["Title"];
                 string authour = reader.Info["Author"];
-                BookDetails bookDetails = _repository.GetFirstOrDefault(x => x.Title == title && x.Author == authour);
+                BookDetails bookDetails = _repository.GetFirstOrDefault(filter: x => x.Title == title && x.Author == authour);
 
                 if (bookDetails == null)
                 {
@@ -42,6 +59,11 @@ namespace BookReaderAPI.Service
             }
 
             return string.IsNullOrEmpty(message) ? "Book cannot be add!" : message;
+        }
+
+        public byte[] GetBookContentById(int id)
+        {
+            return _repository.GetFirstOrDefault(filter: x => x.Id == id, includeProperties: x => x.BookContent).BookContent.Content;
         }
     }
 }

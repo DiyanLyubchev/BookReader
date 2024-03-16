@@ -1,7 +1,11 @@
-﻿namespace BookReaderAPI.Service
+﻿using BookReaderAPI.Models.Response;
+
+namespace BookReaderAPI.Service
 {
     public interface IAPIService
     {
-        string AddBookIfNotExist();
+        string AddBookIfNotExist(byte[] bookContent);
+        List<BookDetailsResponse> GetAllBookDetails();
+        byte[] GetBookContentById(int id);
     }
 }

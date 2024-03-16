@@ -1,0 +1,6 @@
+@BookReaderAPI_HostAddress = http://localhost:5027
+
+GET {{BookReaderAPI_HostAddress}}/book-reader/
+Accept: application/json
+
+###

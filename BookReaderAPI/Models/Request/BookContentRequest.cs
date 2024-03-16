@@ -1,7 +1,10 @@
-﻿namespace BookReaderAPI.Models.Request
+﻿using System.Text.Json.Serialization;
+
+namespace BookReaderAPI.Models.Request
 {
     public class BookContentRequest
     {
-        public byte[] Content { get; set; }
+        [JsonPropertyName("content")]
+        public string Base64Content { get; set; }
     }
 }

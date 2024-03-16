@@ -22,7 +22,10 @@ builder.Services.AddScoped<IGenericRepository<BookPicture>, GenericRepository<Bo
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapGet("/all-details", (IAPIService service) =>
 {
@@ -36,7 +39,7 @@ app.MapGet("/content/{id}", (int id, IAPIService service) =>
 
 app.MapPost("/add-book", ([FromBody] BookContentRequest request, IAPIService service) =>
 {
-    return Results.Ok(service.AddBookIfNotExist(request.Content));
+    return Results.Ok(service.AddBookIfNotExist(request.Base64Content));
 });
 
 app.MapDelete("/delete/{id}", (int id, IAPIService service) =>

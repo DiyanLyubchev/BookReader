@@ -2,6 +2,7 @@
 using BookReaderDataAccess.Models;
 using BookReaderDataAccess.Repository;
 using iTextSharp.text.pdf;
+using System.Text;
 
 namespace BookReaderAPI.Service
 {
@@ -26,15 +27,16 @@ namespace BookReaderAPI.Service
             return booksDetails;
         }
 
-        public string AddBookIfNotExist(byte[] bookContent)
+        public string AddBookIfNotExist(string bookContentBase64)
         {
-            if (bookContent == null || bookContent.Length <= 0)
+            if (string.IsNullOrWhiteSpace(bookContentBase64))
             {
                 return $"The Book cannot be added!";
             }
 
             string message = string.Empty;
-            PdfReader reader = new(bookContent);
+            byte[] decodedByteArray = Convert.FromBase64String(bookContentBase64);
+            PdfReader reader = new(decodedByteArray);
             string title = reader.Info["Title"];
             string authour = reader.Info["Author"];
             BookDetails bookDetails = _repository.GetFirstOrDefault(filter: x => x.Title == title && x.Author == authour);
@@ -49,7 +51,7 @@ namespace BookReaderAPI.Service
                     Pages = reader.NumberOfPages,
                     Author = authour,
                     BookPicture = new() { Picture = pictureBytes },
-                    BookContent = new() { Content = bookContent }
+                    BookContent = new() { Content = decodedByteArray }
                 };
 
                 _repository.InsertWithSave(bookDetails);

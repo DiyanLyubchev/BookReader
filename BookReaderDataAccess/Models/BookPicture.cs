@@ -1,8 +1,7 @@
-﻿namespace BookReaderDataAccess.Models
+﻿namespace BookReaderDataAccess.Models;
+
+public class BookPicture
 {
-    public class BookPicture
-    {
-        public int Id { get; set; }
-        public byte[] Picture { get; set; }
-    }
+    public int Id { get; set; }
+    public byte[] Picture { get; set; }
 }

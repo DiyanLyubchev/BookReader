@@ -12,7 +12,7 @@ builder.Services.AddDbContext<BookReaderContext>(options => options
                 .UseSqlite(builder.Configuration
                 .GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("BookReaderAPI")));
 
-//Service IAPIService
+//Service
 builder.Services.AddScoped<IAPIService, APIService>();
 
 //Repository
@@ -39,5 +39,10 @@ app.MapPost("/add-book", ([FromBody] BookContentRequest request, IAPIService ser
     return Results.Ok(service.AddBookIfNotExist(request.Content));
 });
 
-app.Run();
+app.MapDelete("/delete/{id}", (int id, IAPIService service) =>
+{
+    service.DeleteById(id);
+    return Results.NoContent();
+});
 
+app.Run();

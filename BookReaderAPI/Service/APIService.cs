@@ -30,10 +30,16 @@ namespace BookReaderAPI.Service
             string message = string.Empty;
             //TODO: This will be removed when the client upload feature is implemented
             string pathToBook = @"D:\The-Simple-Path-to-Wealth.pdf";
-
-            if (File.Exists(pathToBook))
+            try
             {
                 bookContent = File.ReadAllBytes(pathToBook);
+            }
+            catch (Exception)
+            {
+            }
+
+            if (bookContent != null && bookContent.Length > 0) 
+            {
                 PdfReader reader = new(bookContent);
                 string title = reader.Info["Title"];
                 string authour = reader.Info["Author"];
@@ -58,12 +64,17 @@ namespace BookReaderAPI.Service
                     message = $"Book with title {title} and from authour: {authour} already exists!";
             }
 
-            return string.IsNullOrEmpty(message) ? "Book cannot be add!" : message;
+            return string.IsNullOrEmpty(message) ? "The Book cannot be added!" : message;
         }
 
         public byte[] GetBookContentById(int id)
         {
             return _repository.GetFirstOrDefault(filter: x => x.Id == id, includeProperties: x => x.BookContent).BookContent.Content;
+        }
+
+        public void DeleteById(int id)
+        {
+            _repository.DeleteWithSave(id);
         }
     }
 }

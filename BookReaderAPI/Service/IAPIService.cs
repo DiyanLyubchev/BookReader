@@ -7,5 +7,6 @@ namespace BookReaderAPI.Service
         string AddBookIfNotExist(byte[] bookContent);
         List<BookDetailsResponse> GetAllBookDetails();
         byte[] GetBookContentById(int id);
+        void DeleteById(int id);
     }
 }

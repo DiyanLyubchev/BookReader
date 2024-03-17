@@ -10,5 +10,5 @@ public interface IAPIService
     byte[] GetBookContentById(int id);
     void DeleteById(int id);
 
-    BookDetails GetBookById(int id);
+    BookDetailsResponse GetBookById(int id);
 }

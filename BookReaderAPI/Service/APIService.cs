@@ -2,7 +2,6 @@
 using BookReaderDataAccess.Models;
 using BookReaderDataAccess.Repository;
 using iTextSharp.text.pdf;
-using System.Text;
 
 namespace BookReaderAPI.Service;
 

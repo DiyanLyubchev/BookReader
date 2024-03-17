@@ -1,4 +1,5 @@
 using BookReaderAPI.Models.Request;
+using BookReaderAPI.Models.Response;
 using BookReaderAPI.Service;
 using BookReaderDataAccess.Context;
 using BookReaderDataAccess.Models;
@@ -34,7 +35,7 @@ app.MapGet("/all-details", (IAPIService service) =>
 
 app.MapGet("/content/{id}", (int id, IAPIService service) =>
 {
-    return Results.Ok(service.GetBookContentById(id));
+    return Results.Ok(new BookContentResponse { Content = service.GetBookContentById(id) });
 });
 
 app.MapPost("/add-book", ([FromBody] BookContentRequest request, IAPIService service) =>

@@ -38,6 +38,11 @@ app.MapGet("/content/{id}", (int id, IAPIService service) =>
     return Results.Ok(new BookContentResponse { Content = service.GetBookContentById(id) });
 });
 
+app.MapGet("/book/{id}", (int id, IAPIService service) =>
+{
+    return Results.Ok(service.GetBookById(id) );
+});
+
 app.MapPost("/add-book", ([FromBody] BookContentRequest request, IAPIService service) =>
 {
     return Results.Ok(service.AddBookIfNotExist(request.Base64Content));

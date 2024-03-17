@@ -66,6 +66,11 @@ public class APIService(IGenericRepository<BookDetails> repository) : IAPIServic
         return _repository.GetFirstOrDefault(filter: x => x.Id == id, includeProperties: x => x.BookContent).BookContent.Content;
     }
 
+    public BookDetails GetBookById(int id)
+    {
+        return _repository.GetFirstOrDefault(filter: x => x.Id == id);
+    }
+
     public void DeleteById(int id)
     {
         _repository.DeleteWithSave(id);

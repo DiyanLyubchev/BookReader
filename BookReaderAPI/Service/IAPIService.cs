@@ -1,4 +1,5 @@
 ﻿using BookReaderAPI.Models.Response;
+using BookReaderDataAccess.Models;
 
 namespace BookReaderAPI.Service;
 
@@ -8,4 +9,6 @@ public interface IAPIService
     List<BookDetailsResponse> GetAllBookDetails();
     byte[] GetBookContentById(int id);
     void DeleteById(int id);
+
+    BookDetails GetBookById(int id);
 }

@@ -1,6 +1,7 @@
 ﻿using BookReaderAPI.Models.Response;
 using BookReaderDataAccess.Models;
 using BookReaderDataAccess.Repository;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 
 namespace BookReaderAPI.Service;
@@ -43,13 +44,14 @@ public class APIService(IGenericRepository<BookDetails> repository) : IAPIServic
         if (bookDetails == null)
         {
             message = $"Book {title} from authour: {authour} was added successfully!";
-            byte[] pictureBytes = reader.GetPageContent(1);
+
+            byte[] pngImageBytes = ConvertPdfFirstPageToPng(decodedByteArray);
             bookDetails = new()
             {
                 Title = title,
                 Pages = reader.NumberOfPages,
                 Author = authour,
-                BookPicture = new() { Picture = pictureBytes },
+                BookPicture = new() { Picture = pngImageBytes },
                 BookContent = new() { Content = decodedByteArray }
             };
 
@@ -82,5 +84,34 @@ public class APIService(IGenericRepository<BookDetails> repository) : IAPIServic
     public void DeleteById(int id)
     {
         _repository.DeleteWithSave(id);
+    }
+
+    public byte[] ConvertPdfFirstPageToPng(byte[] pdfBytes)
+    {
+        using MemoryStream inputPdfStream = new(pdfBytes);
+        using MemoryStream outputImageStream = new();
+        PdfReader reader = new(inputPdfStream);
+        if (reader.NumberOfPages < 1)
+        {
+            throw new InvalidOperationException("PDF does not contain any pages.");
+        }
+
+        RenderFirstPageAsPng(reader, outputImageStream);
+
+        return outputImageStream.ToArray();
+    }
+
+    private void RenderFirstPageAsPng(PdfReader reader, Stream outputImageStream)
+    {
+        using Document document = new(reader.GetPageSizeWithRotation(1));
+        PdfWriter writer = PdfWriter.GetInstance(document, outputImageStream);
+        document.Open();
+
+        PdfContentByte cb = writer.DirectContent;
+        PdfImportedPage page = writer.GetImportedPage(reader, 1);
+        cb.AddTemplate(page, 0, 0);
+
+        document.Close();
+        writer.Close();
     }
 }

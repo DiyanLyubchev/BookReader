@@ -1,0 +1,31 @@
+https://www.c-sharpcorner.com/article/get-started-with-entity-framework-core-using-sqlite/
+!!!!Database first!!!!!!
+=======================
+
+1. Създава се папка Database и се слага db файла
+
+2. Изпълнява се командата като се замества Data Source=.\Database\<db файла>:
+
+Scaffold-DbContext "Data Source=.\Database\products.db" Microsoft.EntityFrameworkCore.Sqlite -OutputDir Context
+
+3. Задължително на дб файла се дава Properties и след това на Copy to Output Directory: Copy if newer
+
+=======================================================================================================
+
+https://www.youtube.com/watch?v=PDiRDNNc2tw
+!!!!Code first!!!
+1. Трябва да инсталираме:
+
+  -Microsoft.EntityFrameworkCore.Sqlite  (Трябва да се внимава с тази библиотека защото има подобна)
+  -SQLite
+  -Microsoft.EntityFrameworkCore.Design
+  -Microsoft.EntityFrameworkCore
+
+2. Трябва да си създадем модел/и + Db context и да ги регистрираме като DbSet
+
+3. През Package Manager Console 
+  3.1. Виждаме в коя дирекротия сме с команда dir и трябва да навигираме до папка на проекта (cd .\SqlLiteWithMigration
+       и със следващото изпълнение на dir трябва да видим, че сме на тази локация C:\Projects\ForTesti\SqlLiteWithMigration)
+
+  3.2 dotnet ef migrations add Initial (за миграция трябва да се изпълни тази команда)
+  3.3 Update-Database (dotnet ef database update)
